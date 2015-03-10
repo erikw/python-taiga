@@ -291,6 +291,23 @@ class IssueAttachments(Attachments):
 
 
 class Issue(InstanceResource):
+    """Issue model
+
+    :param requester: :class:`Requester` instance
+    :param assigned_to: :class:`User` id this issue is assigned to
+    :param description: description of the issue
+    :param is_blocked: set if this issue is blocked or not
+    :param milestone: :class:`Milestone` id
+    :param project: :class:`Project` id
+    :param status: :class:`Status` id
+    :param severity: class:`Severity` id
+    :param priority: class:`Priority` id
+    :param type: class:`Type` id
+    :param subject: subject of the issue
+    :param tags: array of tags
+    :param watchers: array of watchers id
+
+    """
 
     endpoint = 'issues'
 
@@ -356,6 +373,23 @@ class Severities(ListResource):
 
 
 class Project(InstanceResource):
+    """Taiga project model
+
+    :param requester: :class:`Requester` instance
+    :param name: name of the project
+    :param description: description of the project
+    :param creation_template: base template for the project
+    :param is_backlog_activated: name of the project
+    :param is_issues_activated: name of the project
+    :param is_kanban_activated: name of the project
+    :param is_wiki_activated: determines if the project is private or not
+    :param is_private: determines if the project is private or not
+    :param videoconferences: appear-in or talky
+    :param videoconferences_salt: for videoconference chat url generation
+    :param total_milestones: missing
+    :param total_story_points: missing
+
+    """
 
     endpoint = 'projects'
 
@@ -379,6 +413,9 @@ class Project(InstanceResource):
     }
 
     def star(self):
+        """
+        Stars the project
+        """
         self.requester.post(
             '/{endpoint}/{id}/star',
             endpoint=self.endpoint, id=self.id
@@ -386,6 +423,9 @@ class Project(InstanceResource):
         return self
 
     def unstar(self):
+        """
+        Unstars the project
+        """
         self.requester.post(
             '/{endpoint}/{id}/unstar',
             endpoint=self.endpoint, id=self.id
@@ -393,21 +433,43 @@ class Project(InstanceResource):
         return self
 
     def add_user_story(self, subject, **attrs):
+        """
+        Adds a UserStory and returns a :class:`UserStory` resource.
+
+        :param subject: subject of the :class:`UserStory`
+        :param attrs: other :class:`UserStory` attributes
+        """
         return UserStories(self.requester).create(
             self.id, subject, **attrs
         )
 
     def list_user_stories(self):
+        """
+        Returns the :class:`UserStory` list of the project.
+        """
         return UserStories(self.requester).list(project=self.id)
 
     def add_issue(self, subject, priority, status,
                   issue_type, severity, **attrs):
+        """
+        Adds a Issue and returns a :class:`Issue` resource.
+
+        :param subject: subject of the :class:`Issue`
+        :param priority: priority of the :class:`Issue`
+        :param priority: status of the :class:`Issue`
+        :param issue_type: type of the :class:`Issue`
+        :param severity: severity of the :class:`Issue`
+        :param attrs: other :class:`Issue` attributes
+        """
         return Issues(self.requester).create(
             self.id, subject, priority, status,
             issue_type, severity, **attrs
         )
 
     def list_issues(self):
+        """
+        Returns the :class:`Issue` list of the project.
+        """
         return Issues(self.requester).list(project=self.id)
 
     def add_milestone(self, name, estimated_start, estimated_finish, **attrs):
